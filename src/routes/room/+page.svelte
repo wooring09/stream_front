@@ -2,18 +2,20 @@
     import { goto } from '$app/navigation';
     import { username, token } from '$lib/stores/user';
 
-    export let data: { rooms: string[] }
+    export let data
 
     const URL = import.meta.env.VITE_API_BASE_URL;
 
-    let rooms: string[] = data.rooms
+    let rooms = data.rooms
     let showCreate = false;
 
-    // 방 만들기 관련
-    let newRoomName = '';
+    console.log(rooms)
 
-    function enterRoom(roomName: string) {
-        goto('/room/' + roomName);
+    // 방 만들기 관련
+    let newRoomname = '';
+
+    function enterRoom(roomname: string) {
+        goto('/room/' + roomname);
     }
 
     async function createRoom() {
@@ -22,8 +24,12 @@
             return;
         }
 
-        if (!newRoomName) {
+        if (!newRoomname) {
             alert("방 이름을 입력해주세요");
+            return;
+        }
+        else if (newRoomname.charAt(newRoomname.length - 1) === "?"){
+            alert("마지막 글자는 '?'로 끝날 수 없습니다");
             return;
         }
 
@@ -33,11 +39,11 @@
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${$token}`
             },
-            body: JSON.stringify({ room_name: newRoomName }),
+            body: JSON.stringify({ room_name: newRoomname }),
         });
 
         if (res.ok) {
-            goto('/room/' + newRoomName);
+            goto('/room/' + newRoomname);
         } else {
             let message = "방 생성에 실패했습니다.";
             try {
@@ -54,9 +60,22 @@
 
 <div class="room_list">
     {#each rooms as room}
-        <button type="button" class="room_card" on:click={() => enterRoom(room)}>
-            <div class="thumbnail"></div>
-            <div class="title">{room}</div>
+        <button type="button" class="room_card" on:click={() => enterRoom(room.room_name)}>            
+            <div class="room_card_top">
+                <div class="title">{room.room_name}</div>
+                <div class="activated">
+                    {room.activated ? "🟢 생방송 중" : "⚫ 오프라인"}
+                </div>
+            </div>
+            {#if room.activated}
+                <img src="/onair.png">
+            {:else}
+                <img src="/disconnected.png">
+            {/if}
+            <div class="room_card_bottom">
+                <div class="host">👤 {room.host_user_name}</div>
+                <div class="viewership">👁️‍🗨️ {room.viewership}명 시청</div>
+            </div>
         </button>
     {/each}
 </div>
@@ -70,7 +89,7 @@
         <h3>방 만들기</h3>
         <input
             placeholder="방 이름"
-            bind:value={newRoomName}
+            bind:value={newRoomname}
             class="create_bubble_input"
         />
         <div class="create_bubble_buttons">
@@ -99,29 +118,57 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         cursor: pointer;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-
+        
         &:hover {
             transform: translateY(-6px);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
-
-        .thumbnail {
+        
+        img{
             width: 100%;
-            height: 120px;
-            background-color: #ccc;
-            background-image: url('https://placehold.co/320x180?text=Live');
-            background-size: cover;
-            background-position: center;
         }
 
-        .title {
+        .room_card_top {
             padding: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .title {
+                font-size: 18px;
+                font-weight: 700;
+                color: #212529;
+            }
+
+            .activated {
+                font-size: 14px;
+                font-weight: 500;
+                color: #28a745;
+            }
+
+            .activated:has(span.offline) {
+                color: #6c757d;
+            }
+        }
+
+        .room_card_bottom {
+            padding: 0 12px 12px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #495057;
+
+            .host {
+                display: flex;
+                align-items: center;
+            }
+
+            .viewership {
+                display: flex;
+                align-items: center;
+            }
         }
     }
-
     .create_button {
         position: fixed;
         bottom: 24px;

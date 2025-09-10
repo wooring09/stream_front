@@ -29,7 +29,7 @@
             const data = await res.json();
 
             // JWT 토큰을 쿠키로 저장
-            document.cookie = `token=${data.access_token}; path=/`;
+            document.cookie = `token=${data.access_token}; path=/; SameSite=Lax`;
 
             // 로그인 성공 시 홈으로 이동
             window.location.href = '/'
@@ -43,9 +43,19 @@
     }
 </script>
 
+<div class="form-container">
+    <h2>로그인</h2>
+    {#if error}
+        <div class="error">{error}</div>
+    {/if}
+    <input class="create_bubble_input" type="text" placeholder="아이디" bind:value={username}>
+    <input class="create_bubble_input" type="password" placeholder="비밀번호" bind:value={password}>
+    <button on:click={signin}>로그인</button>
+</div>
+
 <style lang="scss">
     .form-container {
-        max-width: 400px;
+        width: 400px;
         margin: 100px auto;
         padding: 32px 28px;
         background: rgba(255, 255, 255, 0.95);
@@ -115,13 +125,3 @@
         text-align: center;
     }
 </style>
-
-<div class="form-container">
-    <h2>로그인</h2>
-    {#if error}
-        <div class="error">{error}</div>
-    {/if}
-    <input class="create_bubble_input" type="text" placeholder="아이디" bind:value={username}>
-    <input class="create_bubble_input" type="password" placeholder="비밀번호" bind:value={password}>
-    <button on:click={signin}>로그인</button>
-</div>

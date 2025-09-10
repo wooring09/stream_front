@@ -8,11 +8,12 @@
 
 <style lang="scss">
     .error-container {
+        margin: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100vh;
+        height: calc(100vh - 120px);
         text-align: center;
         background-color: #f8f9fa;
         padding: 32px;

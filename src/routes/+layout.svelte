@@ -78,6 +78,9 @@
 
     main {
         padding: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>
 

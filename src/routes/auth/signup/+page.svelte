@@ -32,7 +32,7 @@
 
         if (res.ok) {
             const data = await res.json();
-            document.cookie = `token=${data.access_token}; path=/`;
+            document.cookie = `token=${data.access_token}; path=/; SameSite=Lax`;
             window.location.href = '/'
         } else {
             const err = await res.json();
@@ -41,9 +41,18 @@
     }
 </script>
 
+<div class="form-container">
+    <h2>회원가입</h2>
+    {#if error}<div class="error">{error}</div>{/if}
+    <input class="create_bubble_input" type="text" placeholder="아이디" bind:value={username}>
+    <input class="create_bubble_input" type="password" placeholder="비밀번호" bind:value={password}>
+    <input class="create_bubble_input" type="password" placeholder="비밀번호 확인" bind:value={confirmPassword}>
+    <button on:click={signup}>회원가입</button>
+</div>
+
 <style lang="scss">
     .form-container {
-        max-width: 400px;
+        width: 400px;
         margin: 100px auto;
         padding: 32px 28px;
         background: rgba(255, 255, 255, 0.95);
@@ -113,12 +122,3 @@
         text-align: center;
     }
 </style>
-
-<div class="form-container">
-    <h2>회원가입</h2>
-    {#if error}<div class="error">{error}</div>{/if}
-    <input class="create_bubble_input" type="text" placeholder="아이디" bind:value={username}>
-    <input class="create_bubble_input" type="password" placeholder="비밀번호" bind:value={password}>
-    <input class="create_bubble_input" type="password" placeholder="비밀번호 확인" bind:value={confirmPassword}>
-    <button on:click={signup}>회원가입</button>
-</div>
